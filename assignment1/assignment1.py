@@ -23,33 +23,34 @@ def calc(a, b, operation="multiply"):
         return a-b
     elif (operation == "modulo"):
         return a%b
-    return "Unkown operation"
+    elif (operation == "int_divide"):
+        return a//b
+    elif (operation == "power"):
+        return pow(a,b)
+    return "Unknown operation"
 
 
 def data_type_conversion (val, datatype):
     if (datatype == "int"):
         try:
             return int(val)
-        except (ValueError):
+        except (Exception):
             return "You can't convert " + val + " into a int."
         
     elif (datatype == "float"):
         try:
             return float(val)
-        except (ValueError):
+        except (Exception):
             return "You can't convert " + val + " into a float."
         
     elif (datatype == "str"):
-        try:
-            return str(val)
-        except (ValueError):
-            return "You can't convert " + val + " into a string."
+        return str(val)
         
 
 def grade(*args):
     try:
         average = sum(args)/len(args) 
-    except(TypeError):
+    except(Exception):
         return "Invalid data was provided."
     
     if (average >= 90):
@@ -81,8 +82,8 @@ def student_scores(posParam, **kwargs):
         return sum/len(kwargs)
     
     elif (posParam == "best"):
-        best = 0
-        bestName = ""
+        best = kwargs.get("Tom")
+        bestName = "Tom"
         for key, value in kwargs.items():
             if (value > best):
                 best = value
@@ -139,7 +140,7 @@ def pig_latin(input):
         else:
             count = 0
             for i in range(len(word)):
-                if (word[i] == "q" and word[i+1] == "u"):
+                if ( (word[i] == "q") and (i != len(word) - 1) and (word[i+1] == "u") ):
                     count += 2
 
                 elif (word[i] != "a" and
