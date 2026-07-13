@@ -31,20 +31,23 @@ def calc(a, b, operation="multiply"):
 
 
 def data_type_conversion (val, datatype):
-    if (datatype == "int"):
-        try:
-            return int(val)
-        except (Exception):
-            return "You can't convert " + val + " into a int."
-        
-    elif (datatype == "float"):
-        try:
-            return float(val)
-        except (Exception):
-            return "You can't convert " + val + " into a float."
-        
-    elif (datatype == "str"):
-        return str(val)
+    try:
+        if (datatype == "int"):
+            try:
+                return int(val)
+            except (Exception):
+                return "You can't convert " + val + " into a int."
+            
+        elif (datatype == "float"):
+            try:
+                return float(val)
+            except (Exception):
+                return "You can't convert " + val + " into a float."
+            
+        elif (datatype == "str"):
+            return str(val)
+    except:
+        return f"You can't conver {val} into  a {datatype}."
         
 
 def grade(*args):
@@ -82,7 +85,8 @@ def student_scores(posParam, **kwargs):
         return sum/len(kwargs)
     
     elif (posParam == "best"):
-        best = kwargs.get("Tom")
+        firstName = next(iter(kwargs))
+        best = kwargs.get(firstName)
         bestName = "Tom"
         for key, value in kwargs.items():
             if (value > best):
@@ -139,15 +143,15 @@ def pig_latin(input):
 
         else:
             count = 0
-            for i in range(len(word)):
-                if ( (word[i] == "q") and (i != len(word) - 1) and (word[i+1] == "u") ):
+            while count < (len(word)):
+                if ( (word[count] == "q") and (count != len(word) - 1) and (word[count+1] == "u") ):
                     count += 2
 
-                elif (word[i] != "a" and
-                    word[i] != "e" and
-                    word[i] != "i" and
-                    word[i] != "o" and
-                    word[i] != "u"):
+                elif (word[count] != "a" and
+                    word[count] != "e" and
+                    word[count] != "i" and
+                    word[count] != "o" and
+                    word[count] != "u"):
                         count += 1
 
                 else:
@@ -156,7 +160,4 @@ def pig_latin(input):
         
         codeword[j] += individual
     
-    return " ".join(codeword)
-
-    
-            
+    return " ".join(codeword)       
