@@ -3,7 +3,7 @@ def hello():
 
 
 def greet(name):
-    return("Hello, " + name + "!")
+    return f"Hello, {name}!"
 
 
 def calc(a, b, operation="multiply"):
@@ -12,22 +12,48 @@ def calc(a, b, operation="multiply"):
             return a*b
         except (TypeError):
             return "You can't multiply those values!"
+        
     elif (operation == "add"):
-        return a+b
+        try:
+            return a+b
+        except (TypeError):
+            return "You can't add those values!"
+        
     elif (operation == "divide"):
         try:
-            return a/b
-        except (ZeroDivisionError):
-            return "You can't divide by 0!"
+            try:
+                return a/b
+            except (ZeroDivisionError):
+                return "You can't divide by 0!"
+        except (TypeError):
+            return "You can't divide those values!"
+        
     elif (operation == "subtract"):
-        return a-b
+        try:
+            return a-b
+        except (TypeError):
+            return "You can't subtract those values!"
+        
     elif (operation == "modulo"):
-        return a%b
+        try:
+            return a%b
+        except (TypeError):
+            return "You can't divide those values!"
+    
     elif (operation == "int_divide"):
-        return a//b
+        try:
+            try:
+                return a//b
+            except (ZeroDivisionError):
+                return "You can't divide by 0!"
+        except (TypeError):
+            return "You can't divide those values!"
+    
     elif (operation == "power"):
-        return pow(a,b)
-    return "Unknown operation"
+        try:
+            return pow(a,b)
+        except (TypeError):
+            return "You can't exponetiate those values!"
 
 
 def data_type_conversion (val, datatype):
@@ -36,18 +62,19 @@ def data_type_conversion (val, datatype):
             try:
                 return int(val)
             except (Exception):
-                return "You can't convert " + val + " into a int."
+                return f"You can't convert {val} into a {datatype}."
             
         elif (datatype == "float"):
             try:
                 return float(val)
             except (Exception):
-                return "You can't convert " + val + " into a float."
+                return f"You can't convert {val} into a {datatype}."
             
         elif (datatype == "str"):
             return str(val)
-    except:
-        return f"You can't conver {val} into  a {datatype}."
+        
+    except (Exception):
+        return f"You can't convert {val} into a {datatype}."
         
 
 def grade(*args):
@@ -87,7 +114,7 @@ def student_scores(posParam, **kwargs):
     elif (posParam == "best"):
         firstName = next(iter(kwargs))
         best = kwargs.get(firstName)
-        bestName = "Tom"
+        bestName = firstName
         for key, value in kwargs.items():
             if (value > best):
                 best = value
