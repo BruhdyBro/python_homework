@@ -40,23 +40,7 @@ employees = read_employees()
 
 # Task 3
 def column_index(input):
-    employees = {}
-    try:
-        with open('../csv/employees.csv', 'r') as file:
-            reader = csv.reader(file)
-            employees['fields'] = next(reader)
-
-    except Exception as e:
-        trace_back = traceback.extract_tb(e.__traceback__)
-        stack_trace = list()
-        for trace in trace_back:
-            stack_trace.append(f'File : {trace[0]} , Line : {trace[1]}, Func.Name : {trace[2]}, Message : {trace[3]}')
-        print(f"Exception type: {type(e).__name__}")
-        message = str(e)
-        if message:
-            print(f"Exception message: {message}")
-        print(f"Stack trace: {stack_trace}") 
-
+    
     try:
         return employees["fields"].index(input)
     except AttributeError:
@@ -67,11 +51,10 @@ employee_id_column = column_index("employee_id")
 
 # Task 4
 def first_name(rowNum):
-    tEmployees = read_employees()
     index = column_index("first_name")
 
     try:
-        return tEmployees["rows"][rowNum][index]
+        return employees["rows"][rowNum][index]
     except KeyError:
         return "Name not in list."
     
@@ -93,11 +76,11 @@ def employee_find_2(employee_id):
 
 # Task 7
 def sort_by_last_name():
-    tEmployees = read_employees()
+    
     index = column_index("last_name")
-    tEmployees["rows"].sort(key= lambda row: row[index])
+    employees["rows"].sort(key= lambda row: row[index])
 
-    return tEmployees["rows"]
+    return employees["rows"]
 
 employees["rows"] = sort_by_last_name()
 
@@ -182,10 +165,8 @@ minutes1, minutes2 = read_minutes()
 # Task 13
 def create_minutes_set():
     
-    v1, v2 = read_minutes()
-    
-    v3 = set(v1["rows"])
-    v4 = set(v2["rows"])
+    v3 = set(minutes1["rows"])
+    v4 = set(minutes2["rows"])
 
     v5 = v3.union(v4)
     return v5
@@ -197,14 +178,12 @@ minutes_set = create_minutes_set()
 # Task 14
 def create_minutes_list():
     
-    temp = create_minutes_set()
-    minutes_to_list = list(map(lambda x: (x[0], datetime.strptime(x[1], "%B %d, %Y")), temp))
+    minutes_to_list = list(map(lambda x: (x[0], datetime.strptime(x[1], "%B %d, %Y")), minutes_set))
 
     return minutes_to_list 
 
 global minutes_list
 minutes_list = create_minutes_list()
-#print(minutes_list)
 
 
 # Task 15
@@ -215,7 +194,7 @@ def write_sorted_list():
     try:
         with open('minutes.csv', 'w') as file:
             writer = csv.writer(file)
-            writer.writerow(['Name', 'Date'])
+            writer.writerow(minutes1['fields'])
             for data in minutes_to_map:
                 try:
                     back_to_list.append(data)
@@ -236,4 +215,4 @@ def write_sorted_list():
 
     return back_to_list
 
-print(write_sorted_list())
+write_sorted_list()
