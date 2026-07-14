@@ -102,8 +102,7 @@ def all_employees_dict():
 
     all_employees = {}
 
-    tEmployees = read_employees()
-    for employee in tEmployees["rows"]:
+    for employee in employees["rows"]:
         all_employees[employee[0]] = employee_dict(employee)
 
     return all_employees
