@@ -1,6 +1,6 @@
 class TictactoeException(Exception):
     def __init__(self, message):
-        self.message = super.__init__
+        super().__init__(message)
 
 
 class Board():
@@ -19,7 +19,7 @@ class Board():
         ]
         self.turn = "X"
 
-    def turn(self):
+    def whos_turn(self):
         return self.turn
         
     
@@ -96,9 +96,13 @@ GAME_OVER = False
 while not GAME_OVER:
 
     print(f"\n")
-    move = input(f"Player {myBoard.turn}'s move. choose a location:\n {myBoard}")
+    move = input(f"Player {myBoard.whos_turn()}'s move. choose a location:\n {myBoard}")
 
-    myBoard.move(move)
+    try:
+        myBoard.move(move)
+
+    except TictactoeException as e:
+        print(e)
 
     GAME_OVER, result = myBoard.whats_next()
 

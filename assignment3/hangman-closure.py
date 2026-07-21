@@ -31,7 +31,7 @@ def make_hangman(secret_word):
 
 
 FOUND = False
-word = "Orthodontist"
+word = input("What's the secret word?: ")
 secret = make_hangman(word)
 guess = input("Guess a letter: ")
 

@@ -5,9 +5,10 @@ def read_employees():
     employees = list()
     try:
         with open('../csv/employees.csv', 'r') as file:
-            reader = csv.DictReader(file)
+            reader = csv.reader(file)
+            next(reader)
             for row in reader:
-                employees.append(f"{row['first_name']} {row['last_name']}")
+                employees.append(f"{row[1]} {row[2]}")
 
     except Exception as e:
         trace_back = traceback.extract_tb(e.__traceback__)
@@ -24,6 +25,5 @@ def read_employees():
 
 employees = read_employees()
 print(employees)
-
 sorted = list(filter((lambda x: "e" in x), employees))
 print(sorted)

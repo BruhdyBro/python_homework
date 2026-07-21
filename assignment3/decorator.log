@@ -11,5 +11,5 @@ return: True
 function: var_kwargs
 positional paramaters: none
 keyword paramaters: {'name': 'bruhdy', 'age': 22, 'one': 'more time'}
-return: <function logger_decorator.<locals>.wrapper at 0x000002AC467E3690>
+return: <function logger_decorator.<locals>.wrapper at 0x0000017E63253690>
 

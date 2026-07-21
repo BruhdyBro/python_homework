@@ -4,19 +4,15 @@ def type_converter(type_of_output):
 
         def wrapper(*args, **kwargs):
 
-            try:
-                if (type_of_output == "str"):
-                    return str(args)
-                if (type_of_output == "int"):      
-                    return int(args)
-                if (type_of_output == "float"):
-                    return float(args)
-                
-            except Exception:
-                return f"Could not convert into {args}"
-            
-            return
-        
+            result = func(*args, **kwargs)
+
+            if (type_of_output == "str"):
+                return str(result)
+            if (type_of_output == "int"):      
+                return int(result)
+            if (type_of_output == "float"):
+                return float(result)
+            return result
         return wrapper
     return deco
 

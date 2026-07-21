@@ -18,9 +18,10 @@ def logger_decorator (func):
         else:
             logger.log(logging.INFO, ("keyword paramaters: none"))
 
-        logger.log(logging.INFO, (f"return: {func(*args, **kwargs)}"))
+        result = func(*args, **kwargs)
+        logger.log(logging.INFO, (f"return: {result}"))
         logger.log(logging.INFO, (f""))
-        return 
+        return result
     
     return wrapper
 
