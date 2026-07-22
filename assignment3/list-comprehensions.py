@@ -2,13 +2,11 @@ import csv
 import traceback
 
 def read_employees():
-    employees = list()
     try:
         with open('../csv/employees.csv', 'r') as file:
             reader = csv.reader(file)
             next(reader)
-            for row in reader:
-                employees.append(f"{row[1]} {row[2]}")
+            employees = [f"{row[1]} {row[2]}" for row in reader]
 
     except Exception as e:
         trace_back = traceback.extract_tb(e.__traceback__)
@@ -25,5 +23,5 @@ def read_employees():
 
 employees = read_employees()
 print(employees)
-sorted = list(filter((lambda x: "e" in x), employees))
+sorted = [employee for employee in employees if "e" in employee]
 print(sorted)

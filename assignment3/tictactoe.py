@@ -1,5 +1,6 @@
 class TictactoeException(Exception):
     def __init__(self, message):
+        self.message = message
         super().__init__(message)
 
 
@@ -85,9 +86,9 @@ class Board():
                 return (False, "O's turn.")
         else:
             if self.turn == "O":
-                return (True, "X wins!")
+                return (True, "X has won")
             else:
-                return (True, "O wins!")
+                return (True, "O has won")
 
 
 myBoard = Board()

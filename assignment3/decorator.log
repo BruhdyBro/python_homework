@@ -1,15 +1,15 @@
 function: greeting
-positional paramaters: none
-keyword paramaters: none
+Positional paramaters: none
+Keyword paramaters: none
 return: None
 
 function: var_args
 Positional paramaters: ('banana', 'start', 'true', 'Testing')
-keyword paramaters: none
+Keyword paramaters: none
 return: True
 
 function: var_kwargs
-positional paramaters: none
-keyword paramaters: {'name': 'bruhdy', 'age': 22, 'one': 'more time'}
-return: <function logger_decorator.<locals>.wrapper at 0x0000017E63253690>
+Positional paramaters: none
+Keyword paramaters: {'name': 'bruhdy', 'age': 22, 'one': 'more time'}
+return: <function logger_decorator at 0x000001749246BB60>
 

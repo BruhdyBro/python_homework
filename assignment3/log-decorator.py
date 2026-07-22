@@ -11,12 +11,12 @@ def logger_decorator (func):
         if (args):
             logger.log(logging.INFO, (f"Positional paramaters: {args}"))
         else:
-            logger.log(logging.INFO, ("positional paramaters: none"))
+            logger.log(logging.INFO, ("Positional paramaters: none"))
 
         if (kwargs):
-            logger.log(logging.INFO, (f"keyword paramaters: {kwargs}"))
+            logger.log(logging.INFO, (f"Keyword paramaters: {kwargs}"))
         else:
-            logger.log(logging.INFO, ("keyword paramaters: none"))
+            logger.log(logging.INFO, ("Keyword paramaters: none"))
 
         result = func(*args, **kwargs)
         logger.log(logging.INFO, (f"return: {result}"))
@@ -45,7 +45,7 @@ def var_kwargs(**kwargs):
     for key, arg in kwargs.items():
         i += 1
 
-    return logger_decorator(var_kwargs)
+    return logger_decorator
 
 
 greeting()
