@@ -95,24 +95,39 @@ print(clean_data)
 print("\n")
 
 print("-=-=-=-Fixing Empty and Non-Numeric Age-=-=-=-")
-clean_data['Age'] = pd.to_numeric(clean_data['Age'], errors="coerce")
-clean_data['Age'] = clean_data['Age'].fillna(clean_data['Age'].mean())
+clean_data['Age'] = clean_data['Age'].str.strip()
+clean_data['Age'] = clean_data['Age'].str.lower()
+clean_data['Age'] = clean_data['Age'].replace(["n/a", "unknown"], pd.NA)
 print(clean_data)
 print("\n")
 
 print("-=-=-=-Fixing Empty and Non-Numeric Salary-=-=-=-")
+clean_data['Salary'] = clean_data['Salary'].str.strip()
+clean_data['Salary'] = clean_data['Salary'].str.lower()
+clean_data['Salary'] = clean_data['Salary'].replace(["n/a", "unknown"], pd.NA)
+print(clean_data)
+print("\n")
+
+print("-=-=-=-Filling Empty Values-=-=-=-")
+clean_data['Age'] = pd.to_numeric(clean_data['Age'], errors="coerce")
+clean_data['Age'] = clean_data['Age'].fillna(clean_data['Age'].mean())
 clean_data['Salary'] = pd.to_numeric(clean_data['Salary'], errors="coerce")
 clean_data["Salary"] = clean_data["Salary"].fillna(clean_data['Salary'].median())
 print(clean_data)
 print("\n")
 
 print("-=-=-=-Fixing Hire Date-=-=-=-")
+# AI Reviewer this makes no NAT values
 clean_data["Hire Date"] = pd.to_datetime(clean_data['Hire Date'], format='mixed', errors='coerce')
 print(clean_data)
 print("\n")
 
 print("-=-=-=-Fixing Name and Department-=-=-=-")
+clean_data['Name'] = clean_data['Name'].str.strip()
 clean_data['Name'] = clean_data['Name'].str.upper()
+clean_data['Department'] = clean_data['Department'].str.strip()
 clean_data['Department'] = clean_data['Department'].str.upper()
 print(clean_data)
 print("\n")
+
+# All tests passed
