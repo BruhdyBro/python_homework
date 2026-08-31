@@ -5,36 +5,36 @@ import sqlite3
 # Adds a publisher by using the connection cursor and publisher's name
 def add_publisher(cursor, name):
     try:
-        cursor.execute("INSERT INTO Publisher (publisher_name) VALUES (?)", (name,))
+        cursor.execute("INSERT INTO publishers (publisher_name) VALUES (?)", (name,))
     except sqlite3.IntegrityError:
         print(f"{name} is already a publisher in the database.")
 
 # Adds a magazine using the connection cursor. magazine's name, and publisher's name
 def add_magazine(cursor, name, publisher_name):
     try:
-        cursor.execute("SELECT publisher_id FROM Publisher WHERE publisher_name = ?", (publisher_name,))
+        cursor.execute("SELECT publisher_id FROM publishers WHERE publisher_name = ?", (publisher_name,))
         results = cursor.fetchall()
         if len(results) > 0:
             publisher_id = results[0][0]
         else:
             print(f"No publisher found with the name \"{publisher_name}\"")
             return
-        cursor.execute("INSERT INTO Magazine (magazine_name, publisher_id) VALUES (?, ?)", (name, publisher_id))
+        cursor.execute("INSERT INTO magazines (magazine_name, publisher_id) VALUES (?, ?)", (name, publisher_id))
     except sqlite3.IntegrityError:
         print(f"{name} is already a magazine in the database.")
 
 # Adds a subscriber using the connection cursor, subscriber's name, subscriber's address
 def add_subscriber(cursor, name, address):
     try:
-        cursor.execute("INSERT INTO Subscribers (subscriber_name, subscriber_address) VALUES (?, ?)", (name, address))
+        cursor.execute("INSERT INTO subscribers (subscriber_name, subscriber_address) VALUES (?, ?)", (name, address))
     except sqlite3.IntegrityError:
-        print(f"{name} is already a subscriber in the database.")
+        print(f"{name} with that address is already a subscriber in the database.")
 
 # Adds a subscription using the connection cursor, subscriber's name, and magazine's name
 def add_subscription(cursor, subscriber_name, magazine_name):
     try:
         # Get subscriber id from subscriber name
-        cursor.execute("SELECT subscriber_id FROM Subscribers WHERE subscriber_name = ?", (subscriber_name,))
+        cursor.execute("SELECT subscriber_id FROM subscribers WHERE subscriber_name = ?", (subscriber_name,))
         results = cursor.fetchall()
         if len(results) > 0:
             subscriber_id = results[0][0]
@@ -43,7 +43,7 @@ def add_subscription(cursor, subscriber_name, magazine_name):
             return
 
         # Get magazine id from magazine name
-        cursor.execute("SELECT magazine_id FROM Magazine WHERE magazine_name = ?", (magazine_name,))
+        cursor.execute("SELECT magazine_id FROM magazines WHERE magazine_name = ?", (magazine_name,))
         results = cursor.fetchall()
         if len(results) > 0:
             magazine_id = results[0][0]
@@ -53,7 +53,7 @@ def add_subscription(cursor, subscriber_name, magazine_name):
 
         # Insert it all together
         cursor.execute("""
-        INSERT INTO Subscriptions (subscriber_id, subscriber_name, magazine_id, magazine_name, expiration_date) 
+        INSERT INTO subscriptions (subscriber_id, subscriber_name, magazine_id, magazine_name, expiration_date) 
             VALUES (?, ?, ?, ?, ?)""", 
             (subscriber_id, subscriber_name, magazine_id, magazine_name, "January 1st, 2027")
         )
@@ -76,40 +76,40 @@ try:
 
         # Create tables
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Publisher (
+        CREATE TABLE IF NOT EXISTS publishers (
             publisher_id INTEGER PRIMARY KEY,
             publisher_name TEXT NOT NULL UNIQUE
         )
         """)
 
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Magazine (
+        CREATE TABLE IF NOT EXISTS magazines (
             magazine_id INTEGER PRIMARY KEY,
             magazine_name TEXT NOT NULL UNIQUE,
-            publisher_id INTEGER,
-            FOREIGN KEY (publisher_id) REFERENCES Publisher (publisher_id)
+            publisher_id INTEGER NOT NULL,
+            FOREIGN KEY (publisher_id) REFERENCES publishers (publisher_id)
         )
         """)
 
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Subscribers (
+        CREATE TABLE IF NOT EXISTS subscribers (
             subscriber_id INTEGER PRIMARY KEY,
             subscriber_name TEXT NOT NULL,
-            subscriber_address TEXT,
+            subscriber_address TEXT NOT NULL,
             UNIQUE(subscriber_name, subscriber_address)
         )
         """)
 
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Subscriptions (
+        CREATE TABLE IF NOT EXISTS subscriptions (
             subscription_id INTEGER PRIMARY KEY,
             subscriber_id INTEGER NOT NULL,
             subscriber_name TEXT NOT NULL,
             magazine_id INTEGER NOT NULL,
             magazine_name TEXT NOT NULL,
             expiration_date TEXT NOT NULL,
-            FOREIGN KEY (subscriber_id) REFERENCES Subscribers (subscriber_id),
-            FOREIGN KEY (magazine_id) REFERENCES Magazine (magazine_id),
+            FOREIGN KEY (subscriber_id) REFERENCES subscribers (subscriber_id),
+            FOREIGN KEY (magazine_id) REFERENCES magazines (magazine_id),
             UNIQUE(subscriber_id, magazine_id)
         )
         """)
@@ -144,33 +144,42 @@ try:
         #
         # Task 4: Write SQL Queries
         #
-        cursor.execute("SELECT * FROM Subscribers")
+
+        # Get all subscribers
+        cursor.execute("SELECT * FROM subscribers")
         all_subscribers = cursor.fetchall()
 
-        cursor.execute("SELECT * FROM Magazine ORDER BY magazine_name")
+        # Get all magazines sorted by name
+        cursor.execute("SELECT * FROM magazines ORDER BY magazine_name")
         all_magazines = cursor.fetchall()
-        
-        # can be "home" or "sports"
+
+        # Get all magazines by specific publisher. Can be "home" or "sports"
         publisher = "home" 
-        cursor.execute(f"""
-        SELECT p.publisher_name, m.magazine_name FROM Publisher p
-        JOIN Magazine m 
+        cursor.execute("""
+        SELECT p.publisher_name, m.magazine_name FROM publishers p
+        JOIN magazines m 
             ON p.publisher_id = m.publisher_id
         WHERE p.publisher_name = ?;
         """,
-        (publisher,)
-        )
-
+        (publisher,))
         all_results = cursor.fetchall()
+        
+        print()
 
+        print("-=-=-=- All Subscribers in Database -=-=-=-")
         for row in all_subscribers:
             print(row)
+        print()
 
+        print("-=-=-=- All magazines in Database Ordered by Name -=-=-=-")
         for row in all_magazines:
             print(row)
+        print()
 
+        print("-=-=-=- All Magazines in Database from Specific Publisher -=-=-=-")
         for row in all_results:
             print(row)
+        print()
 
 except:
     print("Couldnt do it")
