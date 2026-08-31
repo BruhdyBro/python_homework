@@ -26,6 +26,11 @@ def add_magazine(cursor, name, publisher_name):
 # Adds a subscriber using the connection cursor, subscriber's name, subscriber's address
 def add_subscriber(cursor, name, address):
     try:
+        cursor.execute("SELECT * FROM subscribers WHERE subscriber_name = ? AND subscriber_address = ?", (name, address))
+        results = cursor.fetchall()
+        if len(results) > 0:
+            print(f"{name} with that address is already a subscriber in the database.")
+            return
         cursor.execute("INSERT INTO subscribers (subscriber_name, subscriber_address) VALUES (?, ?)", (name, address))
     except sqlite3.IntegrityError:
         print(f"{name} with that address is already a subscriber in the database.")
@@ -53,9 +58,9 @@ def add_subscription(cursor, subscriber_name, magazine_name):
 
         # Insert it all together
         cursor.execute("""
-        INSERT INTO subscriptions (subscriber_id, subscriber_name, magazine_id, magazine_name, expiration_date) 
-            VALUES (?, ?, ?, ?, ?)""", 
-            (subscriber_id, subscriber_name, magazine_id, magazine_name, "January 1st, 2027")
+        INSERT INTO subscriptions (subscriber_id, magazine_id, expiration_date) 
+            VALUES (?, ?, ?)""", 
+            (subscriber_id, magazine_id, "January 1st, 2027")
         )
     except sqlite3.IntegrityError:
         print(f"{subscriber_name} is already subscribed to {magazine_name} in the database.")
@@ -104,9 +109,7 @@ try:
         CREATE TABLE IF NOT EXISTS subscriptions (
             subscription_id INTEGER PRIMARY KEY,
             subscriber_id INTEGER NOT NULL,
-            subscriber_name TEXT NOT NULL,
             magazine_id INTEGER NOT NULL,
-            magazine_name TEXT NOT NULL,
             expiration_date TEXT NOT NULL,
             FOREIGN KEY (subscriber_id) REFERENCES subscribers (subscriber_id),
             FOREIGN KEY (magazine_id) REFERENCES magazines (magazine_id),
@@ -119,11 +122,13 @@ try:
         #
         add_publisher(cursor, "sports")
         add_publisher(cursor, "home")
+        add_publisher(cursor, "food")
         
         add_magazine(cursor, "soccer", "sports")
         add_magazine(cursor, "football", "sports")
         add_magazine(cursor, "kitchen", "home")
         add_magazine(cursor, "garage", "home")
+        add_magazine(cursor, "food", "meats and veggies")
 
         add_subscriber(cursor, "Bruhdy", "123 Playground Street")
         add_subscriber(cursor, "Betty", "456 Over There Lane")
@@ -163,7 +168,7 @@ try:
         """,
         (publisher,))
         all_results = cursor.fetchall()
-        
+
         print()
 
         print("-=-=-=- All Subscribers in Database -=-=-=-")
