@@ -1,0 +1,10 @@
+    * Which sections of the website are restricted for crawling?
+The sections restricted for crawling are edit and deletion pages, "Special:" pages, and account related pages.
+
+    * Are there specific rules for certain user agents
+There are plenty of specific rules for certain user agents. Some agents aren't allowed on the site, while others have restrictions on how fast they can crawl.
+
+
+
+    * Why do websites use robots.txt? What is its purpose and how does it promote ethical scraping?
+Websites have a robots.txt file to describe what a crawler can and cannot access on that site. It helps the website avoid running into excessive requests that cause server overloads and other issues. Robots.txt promote ethical scraping by giving a clear and descriptive location of what each defined scraper should do, allowing users to know what they should and should not access.
