@@ -10,7 +10,9 @@ try:
 
         conn.execute("PRAGMA foreign_keys = 1")
 
-# Task 1
+        # Task 1
+        print("-=-=-=- Task 1 -=-=-=-")
+
         # Get total price of first five orders
         cursor.execute("""
         SELECT o.order_id, SUM(p.price * l.quantity) AS total_price
@@ -33,7 +35,9 @@ try:
 
 
 
-# Task 2
+        # Task 2
+        print("-=-=-=- Task 2 -=-=-=-")
+
         # Get average price of customer
         cursor.execute("""
         SELECT c.customer_name, AVG(order_totals.total_price) AS average_total_price
@@ -48,7 +52,7 @@ try:
             GROUP BY o.order_id
         ) AS order_totals
             ON c.customer_id = order_totals.customer_id_b
-        GROUP BY c.customer_id;
+        GROUP BY c.customer_id, c.customer_name;
         """)
 
         # fetch and print the average price of order per customer
@@ -60,8 +64,9 @@ try:
 
 
 
-# Task 3
-
+        # Task 3
+        print("-=-=-=- Task 3 -=-=-=-")
+        
         # Set the names for the transaction
         customer_name = "Perez and Sons"
         employee_name = ["Miranda", "Harris"]
@@ -91,33 +96,54 @@ try:
 
         products = cursor.fetchall()
 
-        # Insert the order for the customer by the employee on current date
-        cursor.execute("""
-        INSERT INTO orders (customer_id, employee_id, date)
-            VALUES (?,?, (SELECT date('now')))
-            RETURNING order_id""", 
-            (customer_id, employee_id))
-
-        order_id = cursor.fetchall()[0][0]
-
-        # For each of the 5 products, insert using their ID
-        for product in products:
+        # Start Transaction
+        try:
+            # Insert the order for the customer by the employee on current date
             cursor.execute("""
-            INSERT INTO line_items (order_id, product_id, quantity)
-                VALUES (?, ?, 10)
-            """, (order_id, product[0]))
+            INSERT INTO orders (customer_id, employee_id, date)
+                VALUES (?,?, (SELECT date('now')))
+                RETURNING order_id""", 
+                (customer_id, employee_id))
+
+            order_id = cursor.fetchall()[0][0]
+
+            # For each of the 5 products, insert using their ID
+            for product in products:
+                cursor.execute("""
+                INSERT INTO line_items (order_id, product_id, quantity)
+                    VALUES (?, ?, 10)
+                """, (order_id, product[0]))
+        except Exception as e:
+            conn.rollback()
+            print("Error: ", e)
 
         # Commit transaction
         conn.commit()
 
+        # Select line item id, product name, and quantity. Then display the results
+        cursor.execute("""
+        SELECT l.line_item_id, p.product_name, l.quantity
+        FROM line_items l
+        JOIN products p
+            ON p.product_id = l.product_id
+        WHERE l.order_id = ?
+        """, (order_id, ))
+
+        line_items = cursor.fetchall()
+
+        for item in line_items:
+            print(item)
+        print()
 
 
-# Task 4
+
+        # Task 4
+        print("-=-=-=- Task 4 -=-=-=-")
 
         # Get first, last, and order count for employees with more than 5 orders
 
         cursor.execute("""
-        SELECT e.first_name, e.last_name, COUNT(o.order_id) AS num_orders
+        SELECT e.employee_id, e.first_name, e.last_name, COUNT(o.order_id) AS num_orders
         FROM employees e
         JOIN orders o
             ON e.employee_id = o.employee_id
