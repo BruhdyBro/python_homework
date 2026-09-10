@@ -36,7 +36,7 @@ try:
         # Sort values and export as CSV
         new_df = new_df.sort_values('product_name')
         new_df = new_df.reset_index()
-        new_df.to_csv("order_summary.csv")
-except:
-    print("Couldnt do it")
+        new_df.to_csv("order_summary.csv", index=False)
+except Exception as e:
+    print("Couldnt do it: ", e)
 

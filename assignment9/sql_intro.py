@@ -59,8 +59,8 @@ def add_subscription(cursor, subscriber_name, magazine_name):
         # Insert it all together
         cursor.execute("""
         INSERT INTO subscriptions (subscriber_id, magazine_id, expiration_date) 
-            VALUES (?, ?, ?)""", 
-            (subscriber_id, magazine_id, "January 1st, 2027")
+            VALUES (?, ?, (SELECT date('now', '+1 year')))""", 
+            (subscriber_id, magazine_id)
         )
     except sqlite3.IntegrityError:
         print(f"{subscriber_name} is already subscribed to {magazine_name} in the database.")
@@ -79,115 +79,135 @@ try:
         #
         cursor = conn.cursor()
 
-        # Create tables
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS publishers (
-            publisher_id INTEGER PRIMARY KEY,
-            publisher_name TEXT NOT NULL UNIQUE
-        )
-        """)
+        try:
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS magazines (
-            magazine_id INTEGER PRIMARY KEY,
-            magazine_name TEXT NOT NULL UNIQUE,
-            publisher_id INTEGER NOT NULL,
-            FOREIGN KEY (publisher_id) REFERENCES publishers (publisher_id)
-        )
-        """)
+            # Create tables
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS publishers (
+                publisher_id INTEGER PRIMARY KEY,
+                publisher_name TEXT NOT NULL UNIQUE
+            )
+            """)
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS subscribers (
-            subscriber_id INTEGER PRIMARY KEY,
-            subscriber_name TEXT NOT NULL,
-            subscriber_address TEXT NOT NULL,
-            UNIQUE(subscriber_name, subscriber_address)
-        )
-        """)
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS magazines (
+                magazine_id INTEGER PRIMARY KEY,
+                magazine_name TEXT NOT NULL UNIQUE,
+                publisher_id INTEGER NOT NULL,
+                FOREIGN KEY (publisher_id) REFERENCES publishers (publisher_id)
+            )
+            """)
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS subscriptions (
-            subscription_id INTEGER PRIMARY KEY,
-            subscriber_id INTEGER NOT NULL,
-            magazine_id INTEGER NOT NULL,
-            expiration_date TEXT NOT NULL,
-            FOREIGN KEY (subscriber_id) REFERENCES subscribers (subscriber_id),
-            FOREIGN KEY (magazine_id) REFERENCES magazines (magazine_id),
-            UNIQUE(subscriber_id, magazine_id)
-        )
-        """)
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS subscribers (
+                subscriber_id INTEGER PRIMARY KEY,
+                subscriber_name TEXT NOT NULL,
+                subscriber_address TEXT NOT NULL,
+                UNIQUE(subscriber_name, subscriber_address)
+            )
+            """)
+
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS subscriptions (
+                subscription_id INTEGER PRIMARY KEY,
+                subscriber_id INTEGER NOT NULL,
+                magazine_id INTEGER NOT NULL,
+                expiration_date TEXT NOT NULL,
+                FOREIGN KEY (subscriber_id) REFERENCES subscribers (subscriber_id),
+                FOREIGN KEY (magazine_id) REFERENCES magazines (magazine_id),
+                UNIQUE(subscriber_id, magazine_id)
+            )
+            """)
+
+            conn.commit()
+
+        except Exception as e:
+
+            conn.rollback()
+            print("Unable to create the tables: ", e)
+            
 
         #
         # Task 3: Populate Tables with Data
         #
-        add_publisher(cursor, "sports")
-        add_publisher(cursor, "home")
-        add_publisher(cursor, "food")
-        
-        add_magazine(cursor, "soccer", "sports")
-        add_magazine(cursor, "football", "sports")
-        add_magazine(cursor, "kitchen", "home")
-        add_magazine(cursor, "garage", "home")
-        add_magazine(cursor, "food", "meats and veggies")
 
-        add_subscriber(cursor, "Bruhdy", "123 Playground Street")
-        add_subscriber(cursor, "Betty", "456 Over There Lane")
-        add_subscriber(cursor, "Jason", "789 Myhouse Boulevard")
-        add_subscriber(cursor, "Jonesy", "123 Playground Street")
+        try:
+            add_publisher(cursor, "sports")
+            add_publisher(cursor, "home")
+            add_publisher(cursor, "food")
+            
+            add_magazine(cursor, "soccer", "sports")
+            add_magazine(cursor, "football", "sports")
+            add_magazine(cursor, "kitchen", "home")
+            add_magazine(cursor, "garage", "home")
+            add_magazine(cursor, "meats and veggies", "food")
 
-        add_subscription(cursor, "Bruhdy", "soccer")
-        add_subscription(cursor, "Bruhdy", "kitchen")
-        add_subscription(cursor, "Betty", "kitchen")
-        add_subscription(cursor, "Betty", "garage")
-        add_subscription(cursor, "Jason", "soccer")
-        add_subscription(cursor, "Jason", "football")
-        add_subscription(cursor, "Jonesy", "football")
-        add_subscription(cursor, "Jonesy", "kitchen")
+            add_subscriber(cursor, "Bruhdy", "123 Playground Street")
+            add_subscriber(cursor, "Betty", "456 Over There Lane")
+            add_subscriber(cursor, "Jason", "789 Myhouse Boulevard")
+            add_subscriber(cursor, "Jonesy", "123 Playground Street")
+
+            add_subscription(cursor, "Bruhdy", "soccer")
+            add_subscription(cursor, "Bruhdy", "kitchen")
+            add_subscription(cursor, "Betty", "kitchen")
+            add_subscription(cursor, "Betty", "garage")
+            add_subscription(cursor, "Jason", "soccer")
+            add_subscription(cursor, "Jason", "football")
+            add_subscription(cursor, "Jonesy", "football")
+            add_subscription(cursor, "Jonesy", "kitchen")
+
+            conn.commit()
+
+        except Exception as e:
         
-        conn.commit()
+            conn.rollback()
+            print("Unable to insert into tables: ", e)
+        
+        
 
         #
         # Task 4: Write SQL Queries
         #
+        try:
+            # Get all subscribers
+            cursor.execute("SELECT * FROM subscribers")
+            all_subscribers = cursor.fetchall()
 
-        # Get all subscribers
-        cursor.execute("SELECT * FROM subscribers")
-        all_subscribers = cursor.fetchall()
+            # Get all magazines sorted by name
+            cursor.execute("SELECT * FROM magazines ORDER BY magazine_name")
+            all_magazines = cursor.fetchall()
 
-        # Get all magazines sorted by name
-        cursor.execute("SELECT * FROM magazines ORDER BY magazine_name")
-        all_magazines = cursor.fetchall()
+            # Get all magazines by specific publisher. Can be "home" or "sports"
+            publisher = "home" 
+            cursor.execute("""
+            SELECT p.publisher_name, m.magazine_name FROM publishers p
+            JOIN magazines m 
+                ON p.publisher_id = m.publisher_id
+            WHERE p.publisher_name = ?;
+            """,
+            (publisher,))
+            all_results = cursor.fetchall()
 
-        # Get all magazines by specific publisher. Can be "home" or "sports"
-        publisher = "home" 
-        cursor.execute("""
-        SELECT p.publisher_name, m.magazine_name FROM publishers p
-        JOIN magazines m 
-            ON p.publisher_id = m.publisher_id
-        WHERE p.publisher_name = ?;
-        """,
-        (publisher,))
-        all_results = cursor.fetchall()
+            print()
 
-        print()
+            print("-=-=-=- All Subscribers in Database -=-=-=-")
+            for row in all_subscribers:
+                print(row)
+            print()
 
-        print("-=-=-=- All Subscribers in Database -=-=-=-")
-        for row in all_subscribers:
-            print(row)
-        print()
+            print("-=-=-=- All magazines in Database Ordered by Name -=-=-=-")
+            for row in all_magazines:
+                print(row)
+            print()
 
-        print("-=-=-=- All magazines in Database Ordered by Name -=-=-=-")
-        for row in all_magazines:
-            print(row)
-        print()
+            print(f"-=-=-=- All Magazines in Database from Specific Publisher: \"{publisher}\" -=-=-=-")
+            for row in all_results:
+                print(row[1])
+            print()
 
-        print("-=-=-=- All Magazines in Database from Specific Publisher -=-=-=-")
-        for row in all_results:
-            print(row)
-        print()
+        except Exception as e:
+                
+            print("Unable to select the data: ", e)
 
 except:
-    print("Couldnt do it")
-
-
-
+    print("Couldnt do it: ", e)
