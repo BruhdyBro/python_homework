@@ -1,0 +1,2 @@
+    * Why do websites use robots.txt? What is its purpose and how does it promote ethical scraping?
+Websites have a robots.txt file to describe what a crawler can and cannot access on that site. It helps the website avoid running into excessive requests that cause server overloads and other issues. Robots.txt promote ethical scraping by giving a clear and descriptive location of what each defined scraper should do, allowing users to know what they should and should not access.

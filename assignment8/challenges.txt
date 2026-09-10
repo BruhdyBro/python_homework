@@ -1,0 +1,7 @@
+While completing this assignment, I felt I had a pretty good grasp on accessing the DOM because I have a large amount of experience
+working on JavaScript, as I took the Into to JavaScript course, as well as personal projects that had webpages I created.
+
+However, the main difficulty I had was with XPath. I have previously worked with XML so I understand the relationship of nodes in XML,
+but I found learning the syntax to be a bit confusing. It wasn't until I got to the example uses on the w3schools page that I started
+to understand how the XPath was used in the lesson example and what to do with it. From there, I was able to understand which nodes
+I needed to start at and how to work my way to the next node for the ordered list of Vulnerability Risks.
